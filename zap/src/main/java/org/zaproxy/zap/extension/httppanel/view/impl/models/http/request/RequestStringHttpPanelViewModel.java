@@ -51,9 +51,16 @@ public class RequestStringHttpPanelViewModel extends AbstractHttpStringHttpPanel
         String[] parts = data.split(HttpHeader.LF + HttpHeader.LF);
         String header = parts[0].replaceAll("(?<!\r)\n", HttpHeader.CRLF);
         // Note that if the body has LF, those characters will not be replaced by CRLF.
+        String origMethod = header.substring(0, 7);
 
         try {
-            httpMessage.setRequestHeader(header);
+            if (origMethod.equalsIgnoreCase("CONNECT")) {
+                String modHeader = header.replaceFirst("CONNECT", "GET");
+                httpMessage.setRequestHeader(modHeader);
+                httpMessage.getRequestHeader().setMethod("CONNECT");
+            } else {
+                httpMessage.setRequestHeader(header);
+            }
         } catch (HttpMalformedHeaderException e) {
             logger.warn("Could not Save Header: " + header, e);
             throw new InvalidMessageDataException(

@@ -983,11 +983,11 @@ public class HttpMessage implements Message {
         String header = getRequestHeader().toString();
         try {
             HttpRequestHeader hrh = new HttpRequestHeader(header);
-
-            URI uri = hrh.getURI();
-            // String body = reqPanel.getTxtBody().getText();
+            String prevMethod = getRequestHeader().getMethod();
             String body = getRequestBody().toString();
-            String prevMethod = hrh.getMethod();
+            URI uri = getRequestHeader().getURI();
+            // String body = reqPanel.getTxtBody().getText();
+
             if (prevMethod.equalsIgnoreCase(method)) {
                 return;
             }
@@ -1046,6 +1046,10 @@ public class HttpMessage implements Message {
 
             getRequestHeader().setMessage(hrh.toString());
             getRequestBody().setBody(body);
+            if (method.equals(HttpRequestHeader.CONNECT)
+                    || prevMethod.equals(HttpRequestHeader.CONNECT)) {
+                getRequestHeader().setURI(uri);
+            }
         } catch (HttpMalformedHeaderException e) {
             // Ignore?
             log.error(e.getMessage(), e);
