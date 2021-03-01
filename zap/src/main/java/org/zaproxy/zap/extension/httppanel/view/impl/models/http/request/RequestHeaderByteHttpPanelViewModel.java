@@ -46,17 +46,9 @@ public class RequestHeaderByteHttpPanelViewModel extends AbstractHttpByteHttpPan
         if (httpMessage == null) {
             return;
         }
-        String header = new String(data);
-        String origMethod = header.substring(0, 7);
 
         try {
-            if (origMethod.equalsIgnoreCase("CONNECT")) {
-                String modHeader = header.replaceFirst("CONNECT", "GET");
-                httpMessage.setRequestHeader(modHeader);
-                httpMessage.getRequestHeader().setMethod("CONNECT");
-            } else {
-                httpMessage.setRequestHeader(header);
-            }
+            httpMessage.setRequestHeader(new String(data));
         } catch (HttpMalformedHeaderException e) {
             logger.warn("Could not Save Header: " + Arrays.toString(data), e);
             throw new InvalidMessageDataException(

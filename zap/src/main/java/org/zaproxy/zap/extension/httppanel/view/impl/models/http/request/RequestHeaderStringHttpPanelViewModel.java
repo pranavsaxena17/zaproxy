@@ -48,16 +48,8 @@ public class RequestHeaderStringHttpPanelViewModel extends AbstractHttpStringHtt
         }
 
         String header = data.replaceAll("(?<!\r)\n", HttpHeader.CRLF);
-        String origMethod = header.substring(0, 7);
-
         try {
-            if (origMethod.equalsIgnoreCase("CONNECT")) {
-                String modHeader = header.replaceFirst("CONNECT", "GET");
-                httpMessage.setRequestHeader(modHeader);
-                httpMessage.getRequestHeader().setMethod("CONNECT");
-            } else {
-                httpMessage.setRequestHeader(header);
-            }
+            httpMessage.setRequestHeader(header);
         } catch (HttpMalformedHeaderException e) {
             logger.warn("Could not Save Header: " + header, e);
             throw new InvalidMessageDataException(

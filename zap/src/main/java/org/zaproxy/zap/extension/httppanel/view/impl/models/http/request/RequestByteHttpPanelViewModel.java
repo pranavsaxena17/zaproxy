@@ -62,19 +62,11 @@ public class RequestByteHttpPanelViewModel extends AbstractHttpByteHttpPanelView
             throw new InvalidMessageDataException(
                     Constant.messages.getString("http.panel.model.header.warn.notfound"));
         }
-        String header = new String(data, 0, pos);
-        String origMethod = header.substring(0, 7);
 
         try {
-            if (origMethod.equalsIgnoreCase("CONNECT")) {
-                String modHeader = header.replaceFirst("CONNECT", "GET");
-                httpMessage.setRequestHeader(modHeader);
-                httpMessage.getRequestHeader().setMethod("CONNECT");
-            } else {
-                httpMessage.setRequestHeader(header);
-            }
+            httpMessage.setRequestHeader(new String(data, 0, pos));
         } catch (HttpMalformedHeaderException e) {
-            logger.warn("Could not Save Header: " + header, e);
+            logger.warn("Could not Save Header: " + new String(data, 0, pos), e);
             throw new InvalidMessageDataException(
                     Constant.messages.getString("http.panel.model.header.warn.malformed"), e);
         }

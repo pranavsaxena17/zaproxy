@@ -986,6 +986,7 @@ public class HttpMessage implements Message {
             String prevMethod = getRequestHeader().getMethod();
             String body = getRequestBody().toString();
             URI uri = getRequestHeader().getURI();
+            String hostName = getRequestHeader().getHeader("Host");
             // String body = reqPanel.getTxtBody().getText();
 
             if (prevMethod.equalsIgnoreCase(method)) {
@@ -1048,7 +1049,8 @@ public class HttpMessage implements Message {
             getRequestBody().setBody(body);
             if (method.equals(HttpRequestHeader.CONNECT)
                     || prevMethod.equals(HttpRequestHeader.CONNECT)) {
-                getRequestHeader().setURI(uri);
+                URI connectURI = new URI("http://" + hostName, true);
+                getRequestHeader().setURI(connectURI);
             }
         } catch (HttpMalformedHeaderException e) {
             // Ignore?
