@@ -200,6 +200,48 @@ public class HttpMessageUnitTest {
         assertThat(copy.isResponseFromTargetHost(), is(equalTo(false)));
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {HttpHeader.HTTP, HttpHeader.HTTPS})
+    public void shouldCorrectlyMutateFromConnectHttpMethod(String scheme) throws Exception {
+        // Given
+        HttpMessage message =
+                new HttpMessage(
+                        new HttpRequestHeader(
+                                "CONNECT "
+                                        + scheme
+                                        + "://www.example.com HTTP/1.1\r\nHost: www.example.com"));
+        // When
+        message.mutateHttpMethod(HttpRequestHeader.GET);
+        // Then
+        assertThat(message.getRequestHeader().getMethod(), is(HttpRequestHeader.GET));
+        assertThat(
+                message.getRequestHeader().getURI().toString(), is(scheme + "://www.example.com"));
+        assertThat(
+                message.getRequestHeader().getHeader(HttpRequestHeader.HOST),
+                is("www.example.com"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {HttpHeader.HTTP, HttpHeader.HTTPS})
+    public void shouldCorrectlyMutateToConnectHttpMethod(String scheme) throws Exception {
+        // Given
+        HttpMessage message =
+                new HttpMessage(
+                        new HttpRequestHeader(
+                                "GET "
+                                        + scheme
+                                        + "://www.example.com/path HTTP/1.1\r\nHost: www.example.com"));
+        // When
+        message.mutateHttpMethod(HttpRequestHeader.CONNECT);
+        // Then
+        assertThat(message.getRequestHeader().getMethod(), is(HttpRequestHeader.CONNECT));
+        assertThat(
+                message.getRequestHeader().getURI().toString(), is(scheme + "://www.example.com"));
+        assertThat(
+                message.getRequestHeader().getHeader(HttpRequestHeader.HOST),
+                is("www.example.com"));
+    }
+
     @Test
     void shouldNotSetContentEncodingsWhenSettingHttpRequestBody() {
         // Given

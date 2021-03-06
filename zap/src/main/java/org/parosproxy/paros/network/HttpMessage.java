@@ -987,6 +987,13 @@ public class HttpMessage implements Message {
             String body = getRequestBody().toString();
             URI uri = getRequestHeader().getURI();
             String hostName = getRequestHeader().getHeader("Host");
+            String scheme = uri.getScheme();
+
+            // If the previous method is CONNECT, then the message URI has
+            // no scheme
+            if (prevMethod.equals(HttpRequestHeader.CONNECT)) {
+                scheme = uri.toString();
+            }
             // String body = reqPanel.getTxtBody().getText();
 
             if (prevMethod.equalsIgnoreCase(method)) {
@@ -1047,9 +1054,12 @@ public class HttpMessage implements Message {
 
             getRequestHeader().setMessage(hrh.toString());
             getRequestBody().setBody(body);
+
+            // CONNECT method does not require the entire URI and parses only the authority as the
+            // URI, hence add relevant information
             if (method.equals(HttpRequestHeader.CONNECT)
                     || prevMethod.equals(HttpRequestHeader.CONNECT)) {
-                URI connectURI = new URI("http://" + hostName, true);
+                URI connectURI = new URI(scheme + "://" + hostName, true);
                 getRequestHeader().setURI(connectURI);
             }
         } catch (HttpMalformedHeaderException e) {
